@@ -25,10 +25,12 @@ const jars = [
 const productName = 'wso2am-3.2.0';
 const artifactFolderName = '0551';
 
+const wikeOrWikeson = 'wilkinson'; // Set this also accordingly ( for 3.0 we need to set this to 'wilkes' )
+// ******************************************************** //
+// ******************************************************** //
+// ******************************************************** //
 
-// ******************************************************** //
-// ******************************************************** //
-// ******************************************************** //
+let adminAppHasChanges = false;
 
 const fileExistsInPack = (appName, fileNameInJar) => {
     //joining path of directory 
@@ -58,7 +60,10 @@ const getFilesToRemoveFromPack = (appName, sameFiles) => {
     return filesToRemove;
 }
 const genScriptFile = (filesToRemoveFromPack, newFilesAdded) => {
-   
+    if(adminAppHasChanges) {
+        newFilesAdded.push('admin/site/public/pages/index.jag');   
+        filesToRemoveFromPack.push('admin/site/public/pages/index.jag');
+    }
     const script = `
     var xoFiles_added = [
         ${newFilesAdded.join(',\n')}];
@@ -67,7 +72,7 @@ const genScriptFile = (filesToRemoveFromPack, newFilesAdded) => {
         var xoFiles_removed = [
         ${filesToRemoveFromPack.join(',\n')}]
           
-        var gitRepoRoot = 'https://github.com/wso2-support/update-artifacts/blob/master/wilkinson/${artifactFolderName}/';
+        var gitRepoRoot = 'https://github.com/wso2-support/update-artifacts/blob/master/${wikeOrWikeson}/${artifactFolderName}/';
         var productRoot = 'repository/deployment/server/jaggeryapps/';
 
         $(document).ready(function () {
@@ -123,6 +128,7 @@ const analyzeJarFiles = (appName, jarName) => {
         }
         // We need to copy the manifest.json file since even if one file is updated, it requires to copy this file.
         if(appName !== 'admin') {
+            adminAppHasChanges = true;
             newFilesAdded.push('manifest.json');
             filesToRemoveFromPack.push('manifest.json');
 
