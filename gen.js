@@ -7,23 +7,23 @@ const fs = require('fs');
 // ******************************************************** //
 //          This part need to modified accordingly          //
 const jars = [
+    // {
+    //     jarName: 'org.wso2.carbon.apimgt.publisher.feature-6.7.206',
+    //     appContext: 'publisher',
+    // },
     {
-        jarName: 'org.wso2.carbon.apimgt.publisher.feature-6.6.163',
-        appContext: 'publisher',
-    },
-    {
-        jarName: 'org.wso2.carbon.apimgt.store.feature-6.6.163',
+        jarName: 'org.wso2.carbon.apimgt.store.feature-6.7.206',
         appContext: 'devportal',
     },
-    // {
-    //     jarName: 'org.wso2.carbon.apimgt.admin.feature-6.6.163',
-    //     appContext: 'admin',
-    // }
+    {
+        jarName: 'org.wso2.carbon.apimgt.admin.feature-6.7.206',
+        appContext: 'admin',
+    }
 ]
 
 
-const productName = 'wso2am-3.1.0';
-const artifactFolderName = '0390';
+const productName = 'wso2am-3.2.0';
+const artifactFolderName = '0551';
 
 
 // ******************************************************** //
@@ -122,8 +122,21 @@ const analyzeJarFiles = (appName, jarName) => {
             console.log(destinationFileLocation + '  created ')
         }
         // We need to copy the manifest.json file since even if one file is updated, it requires to copy this file.
-        newFilesAdded.push('manifest.json');
-        filesToRemoveFromPack.push('manifest.json');
+        if(appName !== 'admin') {
+            newFilesAdded.push('manifest.json');
+            filesToRemoveFromPack.push('manifest.json');
+
+            // If admin app we need to copy the index.jag file
+            const adminPageLocation = path.join(__dirname, `${artifactFolderName}/admin/site/public/pages`);
+            const adminPageLocationNew = path.join(__dirname, `${jarName}/features/${jarName.replace('.feature-', '_')}/${appName}/site/public/pages`);
+            if (!fs.existsSync(adminPageLocation)) {
+                fs.mkdirSync(adminPageLocation, { recursive: true });
+                console.log(adminPageLocation + '  created ');
+                fs.copyFileSync(`${adminPageLocationNew}/index.jag`, `${adminPageLocation}/index.jag`, (err) => {
+                    console.log(err);
+                });
+            }
+        }
         
         newFilesAdded.forEach((newFileAdded) => {
             
