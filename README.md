@@ -47,8 +47,8 @@ Example.
     └── wso2update_linux
 ```
 
-Note1: The folder structure is important.
-Note2: The gen.js copied at the same location.
+- Note1: The folder structure is important.
+- Note2: The gen.js copied at the same location.
 
 Open the gen.js and update the following section according to the patch number and product version.
 
