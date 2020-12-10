@@ -19,6 +19,33 @@ run-in-pmt.js
 
 Example.
 
+```bash
+.
+├── gen.js
+├── org.wso2.carbon.apimgt.admin.feature-6.7.206
+│   ├── features
+│   └── plugins
+├── org.wso2.carbon.apimgt.store.feature-6.7.206
+│   ├── features
+│   └── plugins
+└── wso2am-3.2.0
+    ├── INSTALL.txt
+    ├── LICENSE.txt
+    ├── README.txt
+    ├── XMLInputFactory.properties
+    ├── bin
+    ├── business-processes
+    ├── dbscripts
+    ├── lib
+    ├── modules
+    ├── release-notes.html
+    ├── repository
+    ├── resources
+    ├── samples
+    ├── tmp
+    ├── updates
+    └── wso2update_linux
+```
 
 Note1: The folder structure is important.
 Note2: The gen.js copied at the same location.
