@@ -61,8 +61,8 @@ const getFilesToRemoveFromPack = (appName, sameFiles) => {
 }
 const genScriptFile = (filesToRemoveFromPack, newFilesAdded) => {
     if(adminAppHasChanges) {
-        newFilesAdded.push('admin/site/public/pages/index.jag');   
-        filesToRemoveFromPack.push('admin/site/public/pages/index.jag');
+        newFilesAdded.push("'admin/site/public/pages/index.jag'");   
+        filesToRemoveFromPack.push("'admin/site/public/pages/index.jag'");
     }
     const script = `
     var xoFiles_added = [
@@ -131,17 +131,17 @@ const analyzeJarFiles = (appName, jarName) => {
             adminAppHasChanges = true;
             newFilesAdded.push('manifest.json');
             filesToRemoveFromPack.push('manifest.json');
-
-            // If admin app we need to copy the index.jag file
-            const adminPageLocation = path.join(__dirname, `${artifactFolderName}/admin/site/public/pages`);
-            const adminPageLocationNew = path.join(__dirname, `${jarName}/features/${jarName.replace('.feature-', '_')}/${appName}/site/public/pages`);
-            if (!fs.existsSync(adminPageLocation)) {
-                fs.mkdirSync(adminPageLocation, { recursive: true });
-                console.log(adminPageLocation + '  created ');
-                fs.copyFileSync(`${adminPageLocationNew}/index.jag`, `${adminPageLocation}/index.jag`, (err) => {
-                    console.log(err);
-                });
-            }
+        } else {
+             // If admin app we need to copy the index.jag file
+             const adminPageLocation = path.join(__dirname, `${artifactFolderName}/admin/site/public/pages`);
+             const adminPageLocationNew = path.join(__dirname, `${jarName}/features/${jarName.replace('.feature-', '_')}/admin/site/public/pages`);
+             if (!fs.existsSync(adminPageLocation)) {
+                 fs.mkdirSync(adminPageLocation, { recursive: true });
+                 console.log(adminPageLocation + '  created ');
+                 fs.copyFileSync(`${adminPageLocationNew}/index.jag`, `${adminPageLocation}/index.jag`, (err) => {
+                     console.log(err);
+                 });
+             }
         }
         
         newFilesAdded.forEach((newFileAdded) => {
