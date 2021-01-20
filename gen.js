@@ -7,14 +7,14 @@ const fs = require('fs');
 // ******************************************************** //
 //          This part need to modified accordingly          //
 const jars = [
-    // {
-    //     jarName: 'org.wso2.carbon.apimgt.publisher.feature-6.7.206',
-    //     appContext: 'publisher',
-    // },
     {
-        jarName: 'org.wso2.carbon.apimgt.store.feature-6.7.206',
-        appContext: 'devportal',
+        jarName: 'org.wso2.carbon.apimgt.publisher.feature-6.7.206',
+        appContext: 'publisher',
     },
+    // {
+    //     jarName: 'org.wso2.carbon.apimgt.store.feature-6.6.163',
+    //     appContext: 'devportal',
+    // },
     {
         jarName: 'org.wso2.carbon.apimgt.admin.feature-6.7.206',
         appContext: 'admin',
@@ -23,7 +23,7 @@ const jars = [
 
 
 const productName = 'wso2am-3.2.0';
-const artifactFolderName = '0551';
+const artifactFolderName = '0629';
 
 const wikeOrWikeson = 'wilkinson'; // Set this also accordingly ( for 3.0 we need to set this to 'wilkes' )
 // ******************************************************** //
@@ -128,11 +128,12 @@ const analyzeJarFiles = (appName, jarName) => {
         }
         // We need to copy the manifest.json file since even if one file is updated, it requires to copy this file.
         if(appName !== 'admin') {
-            adminAppHasChanges = true;
             newFilesAdded.push('manifest.json');
             filesToRemoveFromPack.push('manifest.json');
         } else {
              // If admin app we need to copy the index.jag file
+             adminAppHasChanges = true;
+
              const adminPageLocation = path.join(__dirname, `${artifactFolderName}/admin/site/public/pages`);
              const adminPageLocationNew = path.join(__dirname, `${jarName}/features/${jarName.replace('.feature-', '_')}/admin/site/public/pages`);
              if (!fs.existsSync(adminPageLocation)) {
