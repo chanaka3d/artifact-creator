@@ -7,23 +7,23 @@ const fs = require('fs');
 // ******************************************************** //
 //          This part need to modified accordingly          //
 const jars = [
-    // {
-    //     jarName: 'org.wso2.carbon.apimgt.publisher.feature-6.7.206',
-    //     appContext: 'publisher',
-    // },
     {
-        jarName: 'org.wso2.carbon.apimgt.store.feature-6.7.206',
-        appContext: 'devportal',
+        jarName: 'org.wso2.carbon.apimgt.ui.publisher-9.0.311.3-SNAPSHOT',
+        appContext: 'publisher',
     },
     // {
-    //     jarName: 'org.wso2.carbon.apimgt.admin.feature-9.0.174',
-    //     appContext: 'admin',
-    // }
+    //     jarName: 'org.wso2.carbon.apimgt.ui.devportal-9.0.311.3-SNAPSHOT',
+    //     appContext: 'devportal',
+    // },
+    {
+        jarName: 'org.wso2.carbon.apimgt.ui.admin-9.0.311.3-SNAPSHOT',
+        appContext: 'admin',
+    }
 ]
 
 
-const productName = 'wso2am-3.2.0';
-const artifactFolderName = '1135';
+const productName = 'wso2am-4.1.0';
+const artifactFolderName = '4570';
 
 const wikeOrWikeson = 'wilkinson'; // Set this also accordingly ( for 3.0 we need to set this to 'wilkes' )
 // ******************************************************** //
@@ -65,7 +65,7 @@ const genScriptFile = (filesToRemoveFromPack, newFilesAdded) => {
         newFilesAdded.push("'admin/site/public/pages/index.jag'");   
         filesToRemoveFromPack.push("'admin/site/public/pages/index.jag'");
     }
-    if(publisherAppHasChanges && productName === 'wso2am-4.0.0') {
+    if(publisherAppHasChanges && (productName === 'wso2am-4.0.0' || productName === 'wso2am-4.1.0')) {
         newFilesAdded.push("'publisher/site/public/pages/index.jag'");   
         filesToRemoveFromPack.push("'publisher/site/public/pages/index.jag'");
     }
@@ -120,7 +120,7 @@ const genScriptFile = (filesToRemoveFromPack, newFilesAdded) => {
 }
 const analyzeJarFiles = (appName, jarName) => {
     //joining path of directory 
-    const directoryPath = path.join(__dirname, `${jarName}/features/${jarName.replace('.feature-', '_')}/${appName}/site/public/dist`);
+    const directoryPath = path.join(__dirname, `${jarName}/features/${jarName.replace('-', '_')}/${appName}/site/public/dist`);
     //passing directoryPath and callback function
     const newFilesAdded = [];
     const sameFiles = [];
@@ -146,13 +146,13 @@ const analyzeJarFiles = (appName, jarName) => {
             console.log(destinationFileLocation + '  created ')
         }
         // We need to copy the manifest.json file since even if one file is updated, it requires to copy this file.
-        if(appName === 'devportal' || (appName === 'publisher' && productName !== 'wso2am-4.0.0')) {
+        if(appName === 'devportal' || (appName === 'publisher' && productName !== 'wso2am-4.0.0' && productName !== 'wso2am-4.1.0')) {
             // If admin app we need to copy the index.jag file
             newFilesAdded.push('manifest.json');
             filesToRemoveFromPack.push('manifest.json');
         } else {
             const adminPageLocation = path.join(__dirname, `${artifactFolderName}/${appName}/site/public/pages`);
-            const adminPageLocationNew = path.join(__dirname, `${jarName}/features/${jarName.replace('.feature-', '_')}/${appName}/site/public/pages`);
+            const adminPageLocationNew = path.join(__dirname, `${jarName}/features/${jarName.replace('-', '_')}/${appName}/site/public/pages`);
             if (!fs.existsSync(adminPageLocation)) {
                 fs.mkdirSync(adminPageLocation, { recursive: true });
                 console.log(adminPageLocation + '  created ');
