@@ -7,23 +7,23 @@ const fs = require('fs');
 // ******************************************************** //
 //          This part need to modified accordingly          //
 const jars = [
-    // {
-    //     jarName: 'org.wso2.carbon.apimgt.publisher.feature-6.7.206',
-    //     appContext: 'publisher',
-    // },
     {
-        jarName: 'org.wso2.carbon.apimgt.store.feature-6.7.206',
-        appContext: 'devportal',
+        jarName: 'org.wso2.carbon.apimgt.ui.publisher-9.0.432.2-SNAPSHOT',
+        appContext: 'publisher',
     },
     // {
-    //     jarName: 'org.wso2.carbon.apimgt.admin.feature-9.0.174',
+    //     jarName: 'org.wso2.carbon.apimgt.ui.devportal-9.0.432.2-SNAPSHOT',
+    //     appContext: 'devportal',
+    // },
+    // {
+    //     jarName: 'org.wso2.carbon.apimgt.ui.admin-9.0.432.2-SNAPSHOT',
     //     appContext: 'admin',
     // }
 ]
 
 
-const productName = 'wso2am-3.2.0';
-const artifactFolderName = '1135';
+const productName = 'wso2am-4.2.0';
+const artifactFolderName = '4570';
 
 const wikeOrWikeson = 'wilkinson'; // Set this also accordingly ( for 3.0 we need to set this to 'wilkes' )
 // ******************************************************** //
@@ -35,7 +35,7 @@ let publisherAppHasChanges = false;
 
 const fileExistsInPack = (appName, fileNameInJar) => {
     //joining path of directory 
-    const directoryPath = path.join(__dirname, `${productName}/repository/deployment/server/jaggeryapps/${appName}/site/public/dist`);
+    const directoryPath = path.join(__dirname, `${productName}/repository/deployment/server/webapps/${appName}/site/public/dist`);
     //passing directoryPath and callback function
     const files = fs.readdirSync(directoryPath);
     
@@ -45,7 +45,7 @@ const fileExistsInPack = (appName, fileNameInJar) => {
 
 const getFilesToRemoveFromPack = (appName, sameFiles) => {
     //joining path of directory 
-    const directoryPath = path.join(__dirname, `${productName}/repository/deployment/server/jaggeryapps/${appName}/site/public/dist`);
+    const directoryPath = path.join(__dirname, `${productName}/repository/deployment/server/webapps/${appName}/site/public/dist`);
 
     const filesToRemove = [];
     //passing directoryPath and callback function
@@ -62,12 +62,12 @@ const getFilesToRemoveFromPack = (appName, sameFiles) => {
 }
 const genScriptFile = (filesToRemoveFromPack, newFilesAdded) => {
     if(adminAppHasChanges) {
-        newFilesAdded.push("'admin/site/public/pages/index.jag'");   
-        filesToRemoveFromPack.push("'admin/site/public/pages/index.jag'");
+        newFilesAdded.push("'admin/site/public/pages/index.jsp'");   
+        filesToRemoveFromPack.push("'admin/site/public/pages/index.jsp'");
     }
-    if(publisherAppHasChanges && productName === 'wso2am-4.0.0') {
-        newFilesAdded.push("'publisher/site/public/pages/index.jag'");   
-        filesToRemoveFromPack.push("'publisher/site/public/pages/index.jag'");
+    if(publisherAppHasChanges) {
+        newFilesAdded.push("'publisher/site/public/pages/index.jsp'");   
+        filesToRemoveFromPack.push("'publisher/site/public/pages/index.jsp'");
     }
     
     const script = `
@@ -79,7 +79,7 @@ const genScriptFile = (filesToRemoveFromPack, newFilesAdded) => {
         ${filesToRemoveFromPack.join(',\n')}]
           
         var gitRepoRoot = 'https://github.com/wso2-support/update-artifacts/blob/master/${wikeOrWikeson}/${artifactFolderName}/';
-        var productRoot = 'repository/deployment/server/jaggeryapps/';
+        var productRoot = 'repository/deployment/server/webapps/';
 
         $(document).ready(function () {
             for (var i = 0; i < xoFiles_added.length; i++) {
@@ -106,9 +106,9 @@ const genScriptFile = (filesToRemoveFromPack, newFilesAdded) => {
     });
 
     var onlyRemove = filesToRemoveFromPack.filter(f => {
-        return(f.indexOf('manifest.json') === -1 && f.indexOf('index.jag') === -1);
+        return(f.indexOf('manifest.json') === -1 && f.indexOf('index.jsp') === -1);
     });
-    const fileListU2 = `${onlyRemove.map(f => `repository/deployment/server/jaggeryapps/${f.replace(/\'/g, '')}`).join(';')}`;
+    const fileListU2 = `${onlyRemove.map(f => `repository/deployment/server/webapps/${f.replace(/\'/g, '')}`).join(';')}`;
 
     fs.writeFile("u2-removed-file-list.txt", fileListU2, function (err) {
         if (err) {
@@ -120,7 +120,7 @@ const genScriptFile = (filesToRemoveFromPack, newFilesAdded) => {
 }
 const analyzeJarFiles = (appName, jarName) => {
     //joining path of directory 
-    const directoryPath = path.join(__dirname, `${jarName}/features/${jarName.replace('.feature-', '_')}/${appName}/site/public/dist`);
+    const directoryPath = path.join(__dirname, `${jarName}/features/${jarName.replace('-', '_')}/${appName}/site/public/dist`);
     //passing directoryPath and callback function
     const newFilesAdded = [];
     const sameFiles = [];
@@ -146,17 +146,17 @@ const analyzeJarFiles = (appName, jarName) => {
             console.log(destinationFileLocation + '  created ')
         }
         // We need to copy the manifest.json file since even if one file is updated, it requires to copy this file.
-        if(appName === 'devportal' || (appName === 'publisher' && productName !== 'wso2am-4.0.0')) {
-            // If admin app we need to copy the index.jag file
+        if(appName === 'devportal') {
+            // If admin app we need to copy the index.jsp file
             newFilesAdded.push('manifest.json');
             filesToRemoveFromPack.push('manifest.json');
         } else {
             const adminPageLocation = path.join(__dirname, `${artifactFolderName}/${appName}/site/public/pages`);
-            const adminPageLocationNew = path.join(__dirname, `${jarName}/features/${jarName.replace('.feature-', '_')}/${appName}/site/public/pages`);
+            const adminPageLocationNew = path.join(__dirname, `${jarName}/features/${jarName.replace('-', '_')}/${appName}/site/public/pages`);
             if (!fs.existsSync(adminPageLocation)) {
                 fs.mkdirSync(adminPageLocation, { recursive: true });
                 console.log(adminPageLocation + '  created ');
-                fs.copyFileSync(`${adminPageLocationNew}/index.jag`, `${adminPageLocation}/index.jag`, (err) => {
+                fs.copyFileSync(`${adminPageLocationNew}/index.jsp`, `${adminPageLocation}/index.jsp`, (err) => {
                     console.log(err);
                 });
             }
