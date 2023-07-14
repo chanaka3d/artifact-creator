@@ -145,22 +145,17 @@ const analyzeJarFiles = (appName, jarName) => {
             fs.mkdirSync(destinationFileLocation, { recursive: true });
             console.log(destinationFileLocation + '  created ')
         }
-        // We need to copy the manifest.json file since even if one file is updated, it requires to copy this file.
-        if(appName === 'devportal') {
-            // If admin app we need to copy the index.jsp file
-            newFilesAdded.push('manifest.json');
-            filesToRemoveFromPack.push('manifest.json');
-        } else {
-            const adminPageLocation = path.join(__dirname, `${artifactFolderName}/${appName}/site/public/pages`);
-            const adminPageLocationNew = path.join(__dirname, `${jarName}/features/${jarName.replace('-', '_')}/${appName}/site/public/pages`);
-            if (!fs.existsSync(adminPageLocation)) {
-                fs.mkdirSync(adminPageLocation, { recursive: true });
-                console.log(adminPageLocation + '  created ');
-                fs.copyFileSync(`${adminPageLocationNew}/index.jsp`, `${adminPageLocation}/index.jsp`, (err) => {
-                    console.log(err);
-                });
-            }
+
+        const adminPageLocation = path.join(__dirname, `${artifactFolderName}/${appName}/site/public/pages`);
+        const adminPageLocationNew = path.join(__dirname, `${jarName}/features/${jarName.replace('-', '_')}/${appName}/site/public/pages`);
+        if (!fs.existsSync(adminPageLocation)) {
+            fs.mkdirSync(adminPageLocation, { recursive: true });
+            console.log(adminPageLocation + '  created ');
+            fs.copyFileSync(`${adminPageLocationNew}/index.jsp`, `${adminPageLocation}/index.jsp`, (err) => {
+                console.log(err);
+            });
         }
+
         if(appName === 'admin') {
             adminAppHasChanges = true;
          }
