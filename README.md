@@ -15,20 +15,21 @@ run-in-pmt.js
 3. Trigger the Jenkins build.
 4. Download each feature builds from the Jenkins after the build is successful.
 5. Clone or download the gen.js from this repo.
-6. Extract all the above zip files ( product, feature archives ) at the same location.
+6. Extract all the above zip files ( product, feature archives ) at the same location as shown below.
+7. Go to the extracted Jenkins snapshot and locate the war file named after the relevant portal ( publisher.war/devportal.war/admin.war)
+8. Extract the war file in the same location to create the relevant portal folder ( publisher/devportal/admin)
 
 Example.
 
 ```bash
 .
 ├── gen.js
-├── org.wso2.carbon.apimgt.admin.feature-6.7.206
-│   ├── features
-│   └── plugins
-├── org.wso2.carbon.apimgt.store.feature-6.7.206
-│   ├── features
-│   └── plugins
-└── wso2am-3.2.0
+├── org.wso2.carbon.apimgt.ui.publisher-9.0.432.19-SNAPSHOT
+│     ├── plugins
+│     └── features
+│           └── org.wso2.carbon.apimgt.ui.publisher.feature_9.0.432.19-SNAPSHOT 
+│                 └── publisher.war 
+└── wso2am-4.2.0
     ├── INSTALL.txt
     ├── LICENSE.txt
     ├── README.txt
@@ -43,14 +44,13 @@ Example.
     ├── resources
     ├── samples
     ├── tmp
-    ├── updates
-    └── wso2update_linux
+    └── updates
 ```
 
 - Note1: The folder structure is important.
 - Note2: The gen.js copied at the same location.
 
-Open the gen.js and update the following section according to the patch number and product version.
+9. Open the gen.js, uncomment and rename the jars section to match your Jenkins zip file 
 
 ```js
 // ******************************************************** //
@@ -59,24 +59,18 @@ Open the gen.js and update the following section according to the patch number a
 //          This part need to modified accordingly          //
 const jars = [
    // {
-   //     jarName: 'org.wso2.carbon.apimgt.publisher.feature-6.7.206',
+   //     jarName: 'org.wso2.carbon.apimgt.ui.publisher-9.0.432.2-SNAPSHOT',
    //     appContext: 'publisher',
    // },
    {
-       jarName: 'org.wso2.carbon.apimgt.store.feature-6.7.206',
+       jarName: 'org.wso2.carbon.apimgt.ui.devportal-9.0.432.2-SNAPSHOT',
        appContext: 'devportal',
    },
    {
-       jarName: 'org.wso2.carbon.apimgt.admin.feature-6.7.206',
+       jarName: 'org.wso2.carbon.apimgt.ui.admin-9.0.432.2-SNAPSHOT',
        appContext: 'admin',
    }
 ]
- 
- 
-const productName = 'wso2am-3.2.0';
-const artifactFolderName = '0551';
- 
- 
 // ******************************************************** //
 // ******************************************************** //
 // ******************************************************** //
@@ -84,7 +78,7 @@ const artifactFolderName = '0551';
 
 Note: You need to comment out the unwanted webapps.
 
-Open a terminal and run the following command.
+10. Open a terminal and run the following command. A folder will be created with a number.
 
 ```bash
 node gen.js
@@ -96,14 +90,15 @@ The following output will be shown.
 /folderpath/0551/devportal/site/public/dist  created 
 /folderpath/0551/admin/site/public/pages  created 
 7 files to added to the devportal dist folder
-7 files removed from the old pack's devportal dist folder
+7 files removed from the old pack's publisher dist folder
 /folderpath/0551/admin/site/public/dist  created 
 4 files to added to the admin dist folder
 4 files removed from the old pack's admin dist folder
 run-in-pmt.js file is saved
 ```
 
-You need to commit the generated folder to the correct repo parth.
 
-Next, you need to go to the “PR analysis screen” and run the run-in-pmt.js. To run the script you need to open the developer tools “Console” tab and paste the content and press “Return/Enter”
-
+11. Click the `Manual File` button in Pull Request Analysis U2 page. Copy the context in the `u2-removed-file-list.txt` file and paste on the `File path in the product pack`. Select `removed` as the file operation.
+12. Add files in the `<folder_number>/<portal>/site/public/dist` (4570/publisher/site/public/dist) as `added` files with the correct file path in the pack.
+13. `index.jsp` file which is in the `pages` folder should be added as a `modified` file.
+14. Also add the files you changed for the fix as modified files.
